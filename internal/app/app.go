@@ -11,6 +11,8 @@ type app struct {
 }
 
 func NewApp() *app {
+	e := echo.New()
+	e.Validator = NewCustomValidator()
 	return &app{
 		echo: echo.New(),
 	}

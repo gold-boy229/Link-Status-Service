@@ -19,7 +19,7 @@ func NewApp() *app {
 func (a *app) Run() {
 	var linkHandler linkHandlerI = handlers.NewLinkHandler()
 
-	a.echo.POST("/links/get_status", linkHandler.ProcessList)
+	a.echo.POST("/links/get_status", linkHandler.GetStatus)
 	a.echo.GET("/links/pdf", linkHandler.BuildPDF)
 
 	a.echo.Logger.Fatal(a.echo.Start(":8080"))

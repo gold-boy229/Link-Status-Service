@@ -2,6 +2,7 @@ package app
 
 import (
 	"Link-Status-Service/internal/handlers"
+	"Link-Status-Service/internal/service"
 	"Link-Status-Service/internal/utils"
 
 	"github.com/labstack/echo"
@@ -20,7 +21,8 @@ func NewApp() *app {
 }
 
 func (a *app) Run() {
-	var linkHandler linkHandlerI = handlers.NewLinkHandler()
+	NewLinkService := service.NewLinkService()
+	var linkHandler linkHandlerI = handlers.NewLinkHandler(NewLinkService)
 
 	a.echo.POST("/links/get_status", linkHandler.GetStatus)
 	a.echo.GET("/links/pdf", linkHandler.BuildPDF)

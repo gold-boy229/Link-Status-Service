@@ -1,7 +1,9 @@
 package handlers
 
-type linkHandler struct{}
+type linkHandler struct {
+	LinkService linkService
+}
 
-func NewLinkHandler() *linkHandler {
-	return &linkHandler{}
+func NewLinkHandler(linkService linkService) *linkHandler {
+	return &linkHandler{LinkService: linkService}
 }

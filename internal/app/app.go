@@ -2,6 +2,7 @@ package app
 
 import (
 	"Link-Status-Service/internal/handlers"
+	"Link-Status-Service/internal/utils"
 
 	"github.com/labstack/echo"
 )
@@ -12,9 +13,9 @@ type app struct {
 
 func NewApp() *app {
 	e := echo.New()
-	e.Validator = NewCustomValidator()
+	e.Validator = utils.NewCustomValidator()
 	return &app{
-		echo: echo.New(),
+		echo: e,
 	}
 }
 

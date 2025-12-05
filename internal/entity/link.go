@@ -13,3 +13,8 @@ type LinkState struct {
 	Link        string
 	IsAvailable bool
 }
+
+type LinksState_Result struct {
+	LinkStates []LinkState
+	Error      error
+}

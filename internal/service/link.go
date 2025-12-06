@@ -2,7 +2,6 @@ package service
 
 import (
 	"Link-Status-Service/internal/entity"
-	"Link-Status-Service/internal/utils"
 	"context"
 	"fmt"
 	"sync"
@@ -18,19 +17,17 @@ func NewLinkService(repo linkRepository, checker linkChecker) *linkService {
 }
 
 func (s *linkService) GetStatus(ctx context.Context, params entity.LinkGetStatus_Params) (entity.LinkGetStatus_Result, error) {
-	links := utils.SortStrings(params.Links)
-
-	linkNum, isLinkNumNew, err := s.repo.GetLinkNum(ctx, links)
+	linkNum, isLinkNumNew, err := s.repo.GetLinkNum(ctx, params.Links)
 	if err != nil {
 		return entity.LinkGetStatus_Result{}, fmt.Errorf("error during getting LinkNum: %w", err)
 	}
 	if isLinkNumNew {
-		if err := s.repo.StoreLinks(ctx, links, linkNum); err != nil {
+		if err := s.repo.StoreLinks(ctx, params.Links, linkNum); err != nil {
 			return entity.LinkGetStatus_Result{}, fmt.Errorf("error during storing set of links: %w", err)
 		}
 	}
 
-	linkStates, err := s.getLinkStates(ctx, links)
+	linkStates, err := s.getLinkStates(ctx, params.Links)
 	if err != nil {
 		return entity.LinkGetStatus_Result{}, fmt.Errorf("error during getting Link states: %w", err)
 	}

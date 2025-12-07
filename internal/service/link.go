@@ -47,7 +47,6 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 	numLinks := len(links)
 
 	resultChan := make(chan linkStateResult, numLinks)
-	errorChan := make(chan error, 1)
 
 	wg := &sync.WaitGroup{}
 	wg.Add(numLinks)
@@ -56,16 +55,7 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 		go func(idx int, link string) {
 			defer wg.Done()
 
-			isAvailable, err := s.checker.IsLinkAvailable(ctx, link)
-			if err != nil {
-				// Send error to error channel and return early
-				select {
-				case errorChan <- fmt.Errorf("link %s check failed: %w", link, err):
-				default:
-				}
-				return
-			}
-
+			isAvailable, _ := s.checker.IsLinkAvailable(ctx, link)
 			// Send successful result to result channel
 			select {
 			case resultChan <- linkStateResult{
@@ -83,7 +73,6 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 	go func() {
 		wg.Wait()
 		close(resultChan)
-		close(errorChan)
 	}()
 
 	linkStates := make([]entity.LinkState, numLinks)
@@ -91,8 +80,6 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 		select {
 		case result := <-resultChan:
 			linkStates[result.Index] = result.LinkState
-		case err := <-errorChan:
-			return nil, err
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		}

@@ -1,21 +1,33 @@
 package dto
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type LinksGetStatus_Request struct {
-	Links []string `json:"links" validate:"required,min=1"`
+	Links LinkList `json:"links" validate:"required,min=1"`
 }
 
-func (req *LinksGetStatus_Request) UnmarshalJSON(data []byte) error {
+type LinkList []string
+
+func (linkList *LinkList) UnmarshalJSON(data []byte) error {
 	var singleLinkStr string
 	err := json.Unmarshal(data, &singleLinkStr)
 	if err == nil {
 		if singleLinkStr == "" {
-			req.Links = make([]string, 0)
+			*linkList = LinkList([]string{})
 		} else {
-			req.Links = []string{singleLinkStr}
+			*linkList = LinkList([]string{singleLinkStr})
 		}
 		return nil
 	}
-	return json.Unmarshal(data, &req.Links)
+
+	var arr []string
+	err = json.Unmarshal(data, &arr)
+	if err != nil {
+		return err
+	}
+
+	*linkList = LinkList(arr)
+	return nil
 }

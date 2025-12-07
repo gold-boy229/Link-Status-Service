@@ -16,7 +16,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 	}{
 		{
 			name:      "Success case: unmarshal empty string",
-			inputJSON: `""`,
+			inputJSON: `{"links":""}`,
 			expectedResult: LinksGetStatus_Request{
 				Links: []string{},
 			},
@@ -24,7 +24,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		},
 		{
 			name:      "Success case: unmarshal not empty string",
-			inputJSON: `"aaa.com"`,
+			inputJSON: `{"links":"aaa.com"}`,
 			expectedResult: LinksGetStatus_Request{
 				Links: []string{"aaa.com"},
 			},
@@ -32,7 +32,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		},
 		{
 			name:      "Success case: unmarshal empty list of strings",
-			inputJSON: `[]`,
+			inputJSON: `{"links":[]}`,
 			expectedResult: LinksGetStatus_Request{
 				Links: []string{},
 			},
@@ -40,7 +40,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		},
 		{
 			name:      "Success case: unmarshal list of one string",
-			inputJSON: `["aaa.com"]`,
+			inputJSON: `{"links":["aaa.com"]}`,
 			expectedResult: LinksGetStatus_Request{
 				Links: []string{"aaa.com"},
 			},
@@ -48,7 +48,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		},
 		{
 			name:      "Success case: unmarshal list of two strings",
-			inputJSON: `["aaa.com", "bbb.com"]`,
+			inputJSON: `{"links":["aaa.com", "bbb.com"]}`,
 			expectedResult: LinksGetStatus_Request{
 				Links: []string{"aaa.com", "bbb.com"},
 			},
@@ -56,7 +56,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		},
 		{
 			name:      "Fail case: unmarshal wrong type (integer)",
-			inputJSON: `123`,
+			inputJSON: `{"links":123}`,
 			expectedResult: LinksGetStatus_Request{
 				Links: []string{},
 			},
@@ -64,15 +64,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		},
 		{
 			name:      "Fail case: unmarshal wrong type (bool)",
-			inputJSON: `true`,
-			expectedResult: LinksGetStatus_Request{
-				Links: []string{},
-			},
-			expectErr: true,
-		},
-		{
-			name:      "Fail case: unmarshal wrong type (object)",
-			inputJSON: `{"links":["aaa.com"]}`,
+			inputJSON: `{"links":true}`,
 			expectedResult: LinksGetStatus_Request{
 				Links: []string{},
 			},

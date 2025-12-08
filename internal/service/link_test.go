@@ -178,8 +178,17 @@ func TestGetLinkStates(t *testing.T) {
 					err:         errors.New("connection failed"),
 				},
 			},
-			expectedResult: nil,
-			expectErr:      true,
+			expectedResult: []entity.LinkState{
+				{
+					Link:        "good.com",
+					IsAvailable: true,
+				},
+				{
+					Link:        "bad.com",
+					IsAvailable: false,
+				},
+			},
+			expectErr: false,
 		},
 		{
 			name: "Failure case: several errors",
@@ -207,8 +216,25 @@ func TestGetLinkStates(t *testing.T) {
 					err:         nil,
 				},
 			},
-			expectedResult: nil,
-			expectErr:      true,
+			expectedResult: []entity.LinkState{
+				{
+					Link:        "good_1.com",
+					IsAvailable: true,
+				},
+				{
+					Link:        "bad_1.com",
+					IsAvailable: false,
+				},
+				{
+					Link:        "bad_2.com",
+					IsAvailable: false,
+				},
+				{
+					Link:        "good_2.com",
+					IsAvailable: true,
+				},
+			},
+			expectErr: false,
 		},
 	}
 

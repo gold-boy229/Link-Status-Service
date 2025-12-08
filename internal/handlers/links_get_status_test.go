@@ -21,7 +21,8 @@ import (
 func TestGetStatus(t *testing.T) {
 	// setup service mock
 	mockService := mocks.NewMockLinkService()
-	handler := NewLinkHandler(mockService)
+	mockPDFBuilder := mocks.NewMockPDFBuilder()
+	handler := NewLinkHandler(mockService, mockPDFBuilder)
 	validator := utils.NewCustomValidator()
 
 	// table tests declaration
@@ -38,7 +39,7 @@ func TestGetStatus(t *testing.T) {
 	}{
 		{
 			name:           "Success case: not empty array",
-			requestBody:    `["aaa.com","bbb.com"]`,
+			requestBody:    `{"links":["aaa.com","bbb.com"]}`,
 			responseBody:   `{"links":{"aaa.com":"available","bbb.com":"not available"},"links_num":1}`,
 			expectedStatus: http.StatusOK,
 
@@ -60,7 +61,7 @@ func TestGetStatus(t *testing.T) {
 		},
 		{
 			name:           "Success case: one link on input as string",
-			requestBody:    `"aaa.com"`,
+			requestBody:    `{"links":"aaa.com"}`,
 			responseBody:   `{"links":{"aaa.com":"available"},"links_num":1}`,
 			expectedStatus: http.StatusOK,
 
@@ -78,7 +79,7 @@ func TestGetStatus(t *testing.T) {
 		},
 		{
 			name:              "Bad Request: empty list input",
-			requestBody:       `[]`,
+			requestBody:       `{"links":[]}`,
 			responseBody:      ``,
 			expectedStatus:    http.StatusBadRequest,
 			expectedErrorCode: consts.ERROR_CODE_BAD_REQUEST,
@@ -89,7 +90,7 @@ func TestGetStatus(t *testing.T) {
 		},
 		{
 			name:              "Bad Request: empty single input string",
-			requestBody:       `""`,
+			requestBody:       `{"links":""}`,
 			responseBody:      ``,
 			expectedStatus:    http.StatusBadRequest,
 			expectedErrorCode: consts.ERROR_CODE_BAD_REQUEST,
@@ -100,7 +101,7 @@ func TestGetStatus(t *testing.T) {
 		},
 		{
 			name:              "Internal Server error: bad sequence of operations",
-			requestBody:       `["aaa.com"]`,
+			requestBody:       `{"links":["aaa.com"]}`,
 			responseBody:      ``,
 			expectedStatus:    http.StatusInternalServerError,
 			expectedErrorCode: consts.ERROR_CODE_INTERNAL_SERVER_ERROR,

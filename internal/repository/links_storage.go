@@ -4,6 +4,7 @@ import (
 	"Link-Status-Service/internal/utils"
 	"bytes"
 	"context"
+	"errors"
 	"hash/fnv"
 	"sync"
 	"sync/atomic"
@@ -55,4 +56,17 @@ func (repo *linkRepository) StoreLinks(ctx context.Context, links []string, link
 	repo.map_LinkNum_to_links.Store(linkNum, sortedLinks)
 
 	return nil
+}
+
+func (repo *linkRepository) GetLinksByLinkNum(ctx context.Context, linkNum int) ([]string, error) {
+	links, exists := repo.map_LinkNum_to_links.Load(linkNum)
+	if !exists {
+		return []string{}, nil
+	}
+
+	_, ok := links.([]string)
+	if !ok {
+		return []string{}, errors.New("cannot convert links to []string")
+	}
+	return links.([]string), nil
 }

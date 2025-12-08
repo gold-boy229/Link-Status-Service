@@ -3,6 +3,7 @@ package service
 import (
 	"Link-Status-Service/internal/entity"
 	"Link-Status-Service/internal/mocks"
+	"Link-Status-Service/internal/utils"
 	"context"
 	"errors"
 	"testing"
@@ -263,6 +264,127 @@ func TestGetLinkStates(t *testing.T) {
 
 			assert.Nil(t, err)
 			assert.EqualValues(t, tt.expectedResult, linkStates)
+		})
+	}
+}
+
+func TestGetUniqueLinksFromLinkSets(t *testing.T) {
+	type mockOutput struct {
+		ReturnData []string
+		ReturnErr  error
+	}
+
+	tests := []struct {
+		name                  string
+		inputLinkNums         []int
+		mockOutputs           []mockOutput
+		expectedResult_sorted []string
+		expectErr             bool
+	}{
+		{
+			name:                  "Success case: no linkNums",
+			inputLinkNums:         []int{},
+			mockOutputs:           []mockOutput{},
+			expectedResult_sorted: []string{},
+			expectErr:             false,
+		},
+		{
+			name:          "Success case: one linkNum",
+			inputLinkNums: []int{1},
+			mockOutputs: []mockOutput{
+				{
+					ReturnData: []string{
+						"aaa.com",
+						"bbb.ru",
+					},
+					ReturnErr: nil,
+				},
+			},
+			expectedResult_sorted: []string{
+				"aaa.com",
+				"bbb.ru",
+			},
+			expectErr: false,
+		},
+		{
+			name:          "Success case: union two not intersecting sets",
+			inputLinkNums: []int{1, 2},
+			mockOutputs: []mockOutput{
+				{
+					ReturnData: []string{
+						"b_second.com",
+						"c_third.com",
+					},
+					ReturnErr: nil,
+				},
+				{
+					ReturnData: []string{
+						"a_first.com",
+						"d_fourth.com",
+					},
+					ReturnErr: nil,
+				},
+			},
+			expectedResult_sorted: []string{
+				"a_first.com",
+				"b_second.com",
+				"c_third.com",
+				"d_fourth.com",
+			},
+			expectErr: false,
+		},
+		{
+			name:          "Success case: union two intersecting sets",
+			inputLinkNums: []int{1, 2},
+			mockOutputs: []mockOutput{
+				{
+					ReturnData: []string{
+						"b_second.com",
+						"a_first.com",
+					},
+					ReturnErr: nil,
+				},
+				{
+					ReturnData: []string{
+						"a_first.com",
+						"c_third.com",
+					},
+					ReturnErr: nil,
+				},
+			},
+			expectedResult_sorted: []string{
+				"a_first.com",
+				"b_second.com",
+				"c_third.com",
+			},
+			expectErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			mockRepo := mocks.NewMockLinkRepository()
+			mockChecker := mocks.NewMockLinkChecker()
+			service := NewLinkService(mockRepo, mockChecker)
+
+			require.Len(t, tt.inputLinkNums, len(tt.mockOutputs))
+			for idx, mockOutput := range tt.mockOutputs {
+				mockRepo.On("GetLinksByLinkNum", mock.Anything, tt.inputLinkNums[idx]).
+					Return(mockOutput.ReturnData, mockOutput.ReturnErr).Once()
+			}
+
+			uniqueLinks, err := service.getUniqueLinksFromLinkSets(context.Background(), tt.inputLinkNums)
+			if tt.expectErr {
+				assert.NotNil(t, err)
+			}
+			assert.Nil(t, err)
+
+			sortedLinks := utils.SortStrings(uniqueLinks)
+			assert.EqualValues(t, tt.expectedResult_sorted, sortedLinks)
+
+			mockRepo.AssertExpectations(t)
 		})
 	}
 }

@@ -2,10 +2,11 @@ package service
 
 import (
 	"Link-Status-Service/internal/entity"
+	"Link-Status-Service/internal/utils"
 	"context"
-	"errors"
 	"fmt"
 	"sync"
+	"sync/atomic"
 )
 
 type linkService struct {
@@ -88,6 +89,63 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 	return linkStates, nil
 }
 
-func (s *linkService) GetStatusesOfLinkSets(context.Context, entity.LinkBuildPDS_Params) (entity.LinkBuildPDS_Result, error) {
-	return entity.LinkBuildPDS_Result{}, errors.New("not implemented")
+func (s *linkService) GetStatusesOfLinkSets(ctx context.Context, params entity.LinkBuildPDS_Params) (entity.LinkBuildPDS_Result, error) {
+	uniqueLinks, err := s.getUniqueLinksFromLinkSets(ctx, params.LinkNums)
+	if err != nil {
+		return entity.LinkBuildPDS_Result{}, fmt.Errorf("cannot get uniqueLinks: %w", err)
+	}
+
+	sortedLinks := utils.SortStrings(uniqueLinks)
+	linkStates, err := s.getLinkStates(ctx, sortedLinks)
+	if err != nil {
+		return entity.LinkBuildPDS_Result{}, fmt.Errorf("cannot get linkStates: %w", err)
+	}
+	return entity.LinkBuildPDS_Result{LinkStates: linkStates}, nil
+}
+
+func (s *linkService) getUniqueLinksFromLinkSets(ctx context.Context, linkNums []int) ([]string, error) {
+	var (
+		mp      = new(sync.Map)
+		mp_size = new(atomic.Int64)
+		wg      = new(sync.WaitGroup)
+		errChan = make(chan error, 1)
+	)
+
+	wg.Add(len(linkNums))
+	for _, linkNum := range linkNums {
+		go func(linkNum int) {
+			defer wg.Done()
+
+			links, err := s.repo.GetLinksByLinkNum(ctx, linkNum)
+			if err != nil {
+				select {
+				case errChan <- fmt.Errorf("cannot get links by linkNum[%v]: %w", linkNum, err):
+				default:
+				}
+				return
+			}
+
+			for _, link := range links {
+				_, alreadyExisted := mp.LoadOrStore(link, struct{}{})
+				if !alreadyExisted {
+					mp_size.Add(1)
+				}
+			}
+		}(linkNum)
+	}
+	wg.Wait()
+
+	select {
+	case err := <-errChan:
+		return []string{}, err
+	default:
+	}
+
+	uniqueLinks := make([]string, 0, mp_size.Load())
+	mp.Range(func(key, value any) bool {
+		link, _ := key.(string)
+		uniqueLinks = append(uniqueLinks, link)
+		return true
+	})
+	return uniqueLinks, nil
 }

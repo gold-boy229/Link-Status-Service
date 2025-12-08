@@ -31,3 +31,7 @@ func (linkList *LinkList) UnmarshalJSON(data []byte) error {
 	*linkList = LinkList(arr)
 	return nil
 }
+
+type LinkBuildPDF_Request struct {
+	LinkNums []int `json:"links_list" validate:"required,min=1"`
+}

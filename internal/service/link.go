@@ -3,6 +3,7 @@ package service
 import (
 	"Link-Status-Service/internal/entity"
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 )
@@ -85,4 +86,8 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 		}
 	}
 	return linkStates, nil
+}
+
+func (s *linkService) GetStatusesOfLinkSets(context.Context, entity.LinkBuildPDS_Params) (entity.LinkBuildPDS_Result, error) {
+	return entity.LinkBuildPDS_Result{}, errors.New("not implemented")
 }

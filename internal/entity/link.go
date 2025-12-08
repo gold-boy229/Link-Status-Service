@@ -18,3 +18,16 @@ type LinksState_Result struct {
 	LinkStates []LinkState
 	Error      error
 }
+
+type LinkBuildPDS_Params struct {
+	LinkNums []int
+}
+
+type LinkBuildPDS_Result struct {
+	LinkStates []LinkState
+}
+
+type LinkStatus struct {
+	Address string
+	Status  string
+}

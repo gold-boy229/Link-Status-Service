@@ -3,6 +3,7 @@ package app
 import (
 	"Link-Status-Service/internal/client"
 	"Link-Status-Service/internal/handlers"
+	"Link-Status-Service/internal/pdf"
 	"Link-Status-Service/internal/repository"
 	"Link-Status-Service/internal/service"
 	"Link-Status-Service/internal/utils"
@@ -27,7 +28,8 @@ func (a *app) Run() {
 	clientChecker := client.NewCustomHTTPClient()
 	linksChecker := service.NewHTTPLinkChecker(clientChecker)
 	linkService := service.NewLinkService(linkRepo, linksChecker)
-	var linkHandler linkHandlerI = handlers.NewLinkHandler(linkService)
+	pdfBuilder := pdf.NewPDFBuilder()
+	var linkHandler linkHandlerI = handlers.NewLinkHandler(linkService, pdfBuilder)
 
 	a.echo.POST("/links/get_status", linkHandler.GetStatus)
 	a.echo.GET("/links/pdf", linkHandler.BuildPDF)

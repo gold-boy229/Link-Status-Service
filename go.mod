@@ -3,6 +3,7 @@ module Link-Status-Service
 go 1.25.1
 
 require (
+	codeberg.org/go-pdf/fpdf v0.11.1
 	github.com/go-playground/validator/v10 v10.28.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/stretchr/testify v1.11.1

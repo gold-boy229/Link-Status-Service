@@ -4,7 +4,6 @@ import (
 	"Link-Status-Service/internal/consts"
 	"Link-Status-Service/internal/dto"
 	"Link-Status-Service/internal/entity"
-	"context"
 	"fmt"
 	"net/http"
 
@@ -24,7 +23,7 @@ func (h linkHandler) BuildPDF(c echo.Context) error {
 
 	params := convertDTOToEntity_LinkBuildPDF(reqDTO)
 	// call service to get link statuses of union of all linkSets
-	result, err := h.LinkService.GetStatusesOfLinkSets(context.TODO(), params)
+	result, err := h.LinkService.GetStatusesOfLinkSets(c.Request().Context(), params)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError,
 			dto.NewError(consts.ERROR_CODE_INTERNAL_SERVER_ERROR, err.Error()))

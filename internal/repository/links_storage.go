@@ -70,3 +70,11 @@ func (repo *linkRepository) GetLinksByLinkNum(ctx context.Context, linkNum int) 
 	}
 	return links.([]string), nil
 }
+
+func (repo *linkRepository) StoreDataToJSON() error {
+	return nil
+}
+
+func (repo *linkRepository) LoadDataFromJSON() error {
+	return nil
+}

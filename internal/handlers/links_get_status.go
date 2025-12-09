@@ -4,7 +4,6 @@ import (
 	"Link-Status-Service/internal/consts"
 	"Link-Status-Service/internal/dto"
 	"Link-Status-Service/internal/entity"
-	"context"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -22,7 +21,7 @@ func (h linkHandler) GetStatus(c echo.Context) error {
 	}
 
 	params := convertDTOToEntity_LinksGetStatus(reqDTO)
-	result, err := h.LinkService.GetStatus(context.TODO(), params)
+	result, err := h.LinkService.GetStatus(c.Request().Context(), params)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError,
 			dto.NewError(consts.ERROR_CODE_INTERNAL_SERVER_ERROR, err.Error()))

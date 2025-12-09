@@ -46,6 +46,7 @@ func (s *linkService) GetStatus(
 
 type linkStateResult struct {
 	entity.LinkState
+
 	Index int
 }
 

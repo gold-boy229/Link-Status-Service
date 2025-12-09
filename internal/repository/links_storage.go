@@ -120,7 +120,7 @@ func (repo *linkRepository) StoreDataToJSON() error {
 	return nil
 }
 
-func saveMapToFile(filename string, data interface{}) error {
+func saveMapToFile(filename string, data any) error {
 	// Ensure the directory exists
 	dirName := filepath.Dir(filename)
 	if err := os.MkdirAll(dirName, 0755); err != nil {
@@ -177,7 +177,7 @@ func (repo *linkRepository) LoadDataFromJSON() error {
 	return nil
 }
 
-func loadFileToMap(filename string, target interface{}) error {
+func loadFileToMap(filename string, target any) error {
 	if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
 		log.Printf("Info: Data file %s not found, skipping load.\n", filename)
 		return nil

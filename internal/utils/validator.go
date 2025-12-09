@@ -15,7 +15,7 @@ func NewCustomValidator() *customValidator {
 	return &customValidator{validator: validator.New(validator.WithRequiredStructEnabled())}
 }
 
-func (cv *customValidator) Validate(i interface{}) error {
+func (cv *customValidator) Validate(i any) error {
 	if err := cv.validator.Struct(i); err != nil {
 		// Return the error so Echo's error handler can process it
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())

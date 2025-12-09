@@ -16,7 +16,10 @@ func NewMockLinkService() *mockLinkService {
 	return &mockLinkService{}
 }
 
-func (m *mockLinkService) GetStatus(ctx context.Context, params entity.LinkGetStatusParams) (entity.LinkGetStatusResult, error) {
+func (m *mockLinkService) GetStatus(
+	ctx context.Context,
+	params entity.LinkGetStatusParams,
+) (entity.LinkGetStatusResult, error) {
 	args := m.Called(ctx, params)
 
 	result, _ := args.Get(0).(entity.LinkGetStatusResult)
@@ -24,7 +27,10 @@ func (m *mockLinkService) GetStatus(ctx context.Context, params entity.LinkGetSt
 	return result, err
 }
 
-func (m *mockLinkService) GetStatusesOfLinkSets(ctx context.Context, params entity.LinkBuildPDSParams) (entity.LinkBuildPDSResult, error) {
+func (m *mockLinkService) GetStatusesOfLinkSets(
+	ctx context.Context,
+	params entity.LinkBuildPDSParams,
+) (entity.LinkBuildPDSResult, error) {
 	args := m.Called(ctx, params)
 
 	result, _ := args.Get(0).(entity.LinkBuildPDSResult)

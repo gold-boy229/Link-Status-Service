@@ -18,7 +18,10 @@ func NewLinkService(repo linkRepository, checker linkChecker) *linkService {
 	return &linkService{repo: repo, checker: checker}
 }
 
-func (s *linkService) GetStatus(ctx context.Context, params entity.LinkGetStatusParams) (entity.LinkGetStatusResult, error) {
+func (s *linkService) GetStatus(
+	ctx context.Context,
+	params entity.LinkGetStatusParams,
+) (entity.LinkGetStatusResult, error) {
 	linkNum, isLinkNumNew, err := s.repo.GetLinkNum(ctx, params.Links)
 	if err != nil {
 		return entity.LinkGetStatusResult{}, fmt.Errorf("error during getting LinkNum: %w", err)
@@ -89,7 +92,10 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 	return linkStates, nil
 }
 
-func (s *linkService) GetStatusesOfLinkSets(ctx context.Context, params entity.LinkBuildPDSParams) (entity.LinkBuildPDSResult, error) {
+func (s *linkService) GetStatusesOfLinkSets(
+	ctx context.Context,
+	params entity.LinkBuildPDSParams,
+) (entity.LinkBuildPDSResult, error) {
 	uniqueLinks, err := s.getUniqueLinksFromLinkSets(ctx, params.LinkNums)
 	if err != nil {
 		return entity.LinkBuildPDSResult{}, fmt.Errorf("cannot get uniqueLinks: %w", err)

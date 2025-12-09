@@ -247,7 +247,8 @@ func TestGetLinkStates(t *testing.T) {
 			mockChecker := mocks.NewMockLinkChecker()
 			service := NewLinkService(mockRepo, mockChecker)
 
-			require.Equal(t, len(tt.mockCheckerInput), len(tt.mockCheckerOut), "Input/Out checker slices must have equal length")
+			require.Equal(t, len(tt.mockCheckerInput), len(tt.mockCheckerOut),
+				"Input/Out checker slices must have equal length")
 			for idx := range tt.mockCheckerInput {
 				mockChecker.On("IsLinkAvailable", mock.Anything, tt.mockCheckerInput[idx]).
 					Return(tt.mockCheckerOut[idx].isAvailable, tt.mockCheckerOut[idx].err)

@@ -1,12 +1,6 @@
 package app
 
 import (
-	"Link-Status-Service/internal/client"
-	"Link-Status-Service/internal/handlers"
-	"Link-Status-Service/internal/pdf"
-	"Link-Status-Service/internal/repository"
-	"Link-Status-Service/internal/service"
-	"Link-Status-Service/internal/utils"
 	"context"
 	"errors"
 	"fmt"
@@ -17,6 +11,13 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"Link-Status-Service/internal/client"
+	"Link-Status-Service/internal/handlers"
+	"Link-Status-Service/internal/pdf"
+	"Link-Status-Service/internal/repository"
+	"Link-Status-Service/internal/service"
+	"Link-Status-Service/internal/utils"
 
 	"github.com/labstack/echo"
 )

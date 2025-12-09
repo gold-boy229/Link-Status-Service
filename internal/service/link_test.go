@@ -1,12 +1,13 @@
 package service
 
 import (
-	"Link-Status-Service/internal/entity"
-	"Link-Status-Service/internal/mocks"
-	"Link-Status-Service/internal/utils"
 	"context"
 	"errors"
 	"testing"
+
+	"Link-Status-Service/internal/entity"
+	"Link-Status-Service/internal/mocks"
+	"Link-Status-Service/internal/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

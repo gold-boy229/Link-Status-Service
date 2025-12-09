@@ -1,12 +1,13 @@
 package service
 
 import (
-	"Link-Status-Service/internal/entity"
-	"Link-Status-Service/internal/utils"
 	"context"
 	"fmt"
 	"sync"
 	"sync/atomic"
+
+	"Link-Status-Service/internal/entity"
+	"Link-Status-Service/internal/utils"
 )
 
 type linkService struct {

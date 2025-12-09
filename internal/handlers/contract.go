@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"Link-Status-Service/internal/entity"
 	"context"
+
+	"Link-Status-Service/internal/entity"
 
 	"codeberg.org/go-pdf/fpdf"
 )

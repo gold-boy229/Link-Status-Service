@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"net/http"
+
 	"Link-Status-Service/internal/consts"
 	"Link-Status-Service/internal/dto"
 	"Link-Status-Service/internal/entity"
-	"net/http"
 
 	"github.com/labstack/echo"
 )

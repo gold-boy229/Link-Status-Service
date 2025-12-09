@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"Link-Status-Service/internal/utils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -12,6 +11,8 @@ import (
 	"path/filepath"
 	"sync"
 	"sync/atomic"
+
+	"Link-Status-Service/internal/utils"
 )
 
 type linkRepository struct {

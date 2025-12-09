@@ -1,10 +1,11 @@
 package dto
 
 import (
-	"Link-Status-Service/internal/consts"
 	"encoding/json"
 	"fmt"
 	"testing"
+
+	"Link-Status-Service/internal/consts"
 
 	"github.com/stretchr/testify/assert"
 )

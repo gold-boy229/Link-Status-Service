@@ -1,17 +1,18 @@
 package handlers
 
 import (
-	"Link-Status-Service/internal/consts"
-	"Link-Status-Service/internal/dto"
-	"Link-Status-Service/internal/entity"
-	"Link-Status-Service/internal/mocks"
-	"Link-Status-Service/internal/utils"
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"Link-Status-Service/internal/consts"
+	"Link-Status-Service/internal/dto"
+	"Link-Status-Service/internal/entity"
+	"Link-Status-Service/internal/mocks"
+	"Link-Status-Service/internal/utils"
 
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/assert"

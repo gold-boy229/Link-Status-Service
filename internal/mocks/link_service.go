@@ -1,8 +1,9 @@
 package mocks
 
 import (
-	"Link-Status-Service/internal/entity"
 	"context"
+
+	"Link-Status-Service/internal/entity"
 
 	"github.com/stretchr/testify/mock"
 )

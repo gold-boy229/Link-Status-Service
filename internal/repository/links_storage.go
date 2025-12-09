@@ -4,8 +4,12 @@ import (
 	"Link-Status-Service/internal/utils"
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"hash/fnv"
+	"os"
+	"path/filepath"
 	"sync"
 	"sync/atomic"
 )
@@ -72,9 +76,117 @@ func (repo *linkRepository) GetLinksByLinkNum(ctx context.Context, linkNum int) 
 }
 
 func (repo *linkRepository) StoreDataToJSON() error {
+	// Prepare and Save map_hash_to_LinkNum
+	hashToLinkNumMap := make(map[uint64]int)
+	repo.map_hash_to_LinkNum.Range(func(key, value any) bool {
+		hash, ok := key.(uint64)
+		if !ok {
+			return false
+		}
+		linkNum, ok := value.(int)
+		if !ok {
+			return false
+		}
+		hashToLinkNumMap[hash] = linkNum
+		return true
+	})
+	if err := saveMapToFile("./data/hash_to_link_num.json", hashToLinkNumMap); err != nil {
+		return err
+	}
+
+	// Prepare and Save map_LinkNum_to_links
+	linkNumToLinksMap := make(map[int][]string)
+	repo.map_LinkNum_to_links.Range(func(key, value any) bool {
+		linkNum, ok := key.(int)
+		if !ok {
+			return false
+		}
+		links, ok := value.([]string)
+		if !ok {
+			return false
+		}
+		linkNumToLinksMap[linkNum] = links
+		return true
+	})
+	if err := saveMapToFile("./data/link_num_to_links.json", linkNumToLinksMap); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func saveMapToFile(filename string, data interface{}) error {
+	// Ensure the directory exists
+	dirName := filepath.Dir(filename)
+	if err := os.MkdirAll(dirName, 0755); err != nil {
+		return fmt.Errorf("failed to create directory %s: %w", dirName, err)
+	}
+
+	jsonData, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal data for %s: %w", filename, err)
+	}
+
+	err = os.WriteFile(filename, jsonData, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write JSON data to file %s: %w", filename, err)
+	}
+
+	fmt.Printf("Info: Successfully saved data to %s.\n", filename)
 	return nil
 }
 
 func (repo *linkRepository) LoadDataFromJSON() error {
+	var (
+		hashToLinkNumMap  map[uint64]int
+		linkNumToLinksMap map[int][]string
+	)
+
+	// Load map_hash_to_LinkNum
+	if err := loadFileToMap("./data/hash_to_link_num.json", &hashToLinkNumMap); err != nil {
+		return fmt.Errorf("failed to load hash_to_link_num data: %w", err)
+	}
+
+	// Load map_LinkNum_to_links
+	if err := loadFileToMap("./data/link_num_to_links.json", &linkNumToLinksMap); err != nil {
+		return fmt.Errorf("failed to load link_num_to_links data: %w", err)
+	}
+
+	// Load data from maps into sync.Map's
+	for hash, linkNum := range hashToLinkNumMap {
+		repo.map_hash_to_LinkNum.Store(hash, linkNum)
+	}
+	for linkNum, links := range linkNumToLinksMap {
+		repo.map_LinkNum_to_links.Store(linkNum, links)
+	}
+
+	// find max linkNum to set the counter correctly
+	maxLinkNum := 0
+	for linkNum := range linkNumToLinksMap {
+		if linkNum > maxLinkNum {
+			maxLinkNum = linkNum
+		}
+	}
+	repo.counter.Store(uint64(maxLinkNum) + 1)
+
+	return nil
+}
+
+func loadFileToMap(filename string, target interface{}) error {
+	if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
+		fmt.Printf("Info: Data file %s not found, skipping load.\n", filename)
+		return nil
+	}
+
+	fileData, err := os.ReadFile(filename)
+	if err != nil {
+		return fmt.Errorf("failed to read data file %s: %w", filename, err)
+	}
+
+	if err := json.Unmarshal(fileData, target); err != nil {
+		return fmt.Errorf("failed to unmarshal JSON data from %s: %w", filename, err)
+	}
+
+	fmt.Printf("Info: Successfully loaded data from %s.\n", filename)
 	return nil
 }

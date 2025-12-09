@@ -9,9 +9,12 @@ import (
 	"Link-Status-Service/internal/utils"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -51,8 +54,9 @@ func (a *app) Run() {
 	defer stop()
 
 	// start server in a separate goroutine
+	app_port := getAppPort()
 	go func() {
-		if err := a.echo.Start(":8080"); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := a.echo.Start(fmt.Sprintf(":%d", app_port)); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			a.echo.Logger.Fatal("shutting down the server unexpectedly:", err)
 		}
 	}()
@@ -81,4 +85,19 @@ func (a *app) Run() {
 	}
 
 	log.Println("Server gracefully stopped.")
+}
+
+func getAppPort() int {
+	const defaultPort = 8080
+
+	portStr := os.Getenv("APP_PORT")
+	if portStr == "" {
+		return defaultPort
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		log.Printf("Invalid app port %q. Service will use default port: %d", portStr, defaultPort)
+		return defaultPort
+	}
+	return port
 }

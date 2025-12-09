@@ -24,7 +24,7 @@ func (links LinksStatus_Response) MarshalJSON() ([]byte, error) {
 			buff.WriteString(", ")
 		}
 
-		buff.WriteString(fmt.Sprintf("%q:%q", link.Address, link.Status))
+		fmt.Fprintf(buff, "%q:%q", link.Address, link.Status)
 	}
 	buff.WriteString("}")
 

@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -25,7 +26,11 @@ func (client *customHTTPClient) IsLinkAvailable(ctx context.Context, link string
 	if err != nil {
 		return false, fmt.Errorf("network error during HEAD request to link %q; err: %w", link, err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			log.Printf("cannot close response body: %v", closeErr)
+		}
+	}()
 
 	if isCodeSuccessful(resp.StatusCode) || isCodeRedirection(resp.StatusCode) {
 		return true, nil

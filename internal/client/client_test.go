@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -54,7 +55,12 @@ func TestIsLinkAvailable(t *testing.T) {
 				require.True(t, ok, "webserver doesn't support hijacking")
 				conn, _, err := hj.Hijack()
 				require.NoError(t, err)
-				conn.Close()
+				func() {
+					if closeErr := conn.Close(); closeErr != nil {
+						log.Printf("cannot close response body: %v", closeErr)
+					}
+				}()
+
 			},
 			wantAvailable: false,
 			wantErr:       true,
@@ -76,7 +82,9 @@ func TestIsLinkAvailable(t *testing.T) {
 				// Default handler: set the status code
 				w.WriteHeader(tt.statusCode)
 				// Need to write something to make Go's client happy during HEAD request mocks
-				io.WriteString(w, "body content")
+				if _, err := io.WriteString(w, "body content"); err != nil {
+					t.Logf("Error writing mock response body: %v", err)
+				}
 			}))
 			defer server.Close()
 
@@ -86,7 +94,7 @@ func TestIsLinkAvailable(t *testing.T) {
 			// Crucially, we disable automatic redirects in the test client,
 			// otherwise the httptest server will follow redirects automatically
 			// and we can't test our 301/302 logic correctly.
-			client.Client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 				return http.ErrUseLastResponse
 			}
 

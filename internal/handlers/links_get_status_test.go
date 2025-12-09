@@ -139,7 +139,8 @@ func TestGetStatus(t *testing.T) {
 					Return(tt.mockReturnData, tt.mockReturnErr).Once()
 			}
 
-			handler.GetStatus(echo_context)
+			err := handler.GetStatus(echo_context)
+			assert.Nil(t, err)
 
 			assert.Equal(t, tt.expectedStatus, rr.Code, "Handler returned wrong status code")
 

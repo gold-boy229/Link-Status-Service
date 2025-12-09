@@ -78,7 +78,7 @@ func (a *app) Run() {
 
 	// Call the repository method to persist data (Task 2)
 	log.Println("Persisting data to JSON files...")
-	if err := dataManager.StoreDataToJSON(); err != nil {
+	if err = dataManager.StoreDataToJSON(); err != nil {
 		log.Printf("Error storing data to JSON: %v\n", err)
 	} else {
 		log.Println("Data persistence complete.")

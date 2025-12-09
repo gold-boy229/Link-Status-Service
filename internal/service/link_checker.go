@@ -42,7 +42,8 @@ func (h *hTTPLinkChecker) IsLinkAvailable(ctx context.Context, link string) (boo
 		go func(url string) {
 			defer wg.Done()
 
-			isAvailable, err := h.checker.IsLinkAvailable(ctx, url)
+			var isAvailable bool
+			isAvailable, err = h.checker.IsLinkAvailable(ctx, url)
 			if err != nil {
 				select {
 				case errChan <- err:
@@ -77,7 +78,7 @@ func (h *hTTPLinkChecker) IsLinkAvailable(ctx context.Context, link string) (boo
 				return false, nil
 			}
 
-		case err := <-errChan:
+		case err = <-errChan:
 			errs = append(errs, err)
 			if len(errs) == totalNumberOfCalls {
 				return false, fmt.Errorf("got two errors for http and https calls: \n1)%w \n2)%w", errs[0], errs[1])

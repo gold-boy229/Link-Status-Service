@@ -148,14 +148,15 @@ func TestGetStatus(t *testing.T) {
 
 			// check response Body
 			if tt.expectedStatus == http.StatusOK {
-				rawJSON, err := getRawJSON(rr.Body)
+				var rawJSON string
+				rawJSON, err = getRawJSON(rr.Body)
 				assert.Nil(t, err)
 
 				rawJSON = strings.TrimSpace(rawJSON)
 				assert.Equal(t, tt.responseBody, rawJSON)
 			} else {
 				var errorRes dto.ErrorResponse
-				err := json.NewDecoder(rr.Body).Decode(&errorRes)
+				err = json.NewDecoder(rr.Body).Decode(&errorRes)
 				assert.Nil(t, err)
 				assert.Equal(t, tt.expectedErrorCode, errorRes.Code)
 			}

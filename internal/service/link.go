@@ -24,7 +24,7 @@ func (s *linkService) GetStatus(ctx context.Context, params entity.LinkGetStatus
 		return entity.LinkGetStatus_Result{}, fmt.Errorf("error during getting LinkNum: %w", err)
 	}
 	if isLinkNumNew {
-		if err := s.repo.StoreLinks(ctx, params.Links, linkNum); err != nil {
+		if err = s.repo.StoreLinks(ctx, params.Links, linkNum); err != nil {
 			return entity.LinkGetStatus_Result{}, fmt.Errorf("error during storing set of links: %w", err)
 		}
 	}

@@ -186,7 +186,7 @@ func loadFileToMap(filename string, target interface{}) error {
 		return fmt.Errorf("failed to read data file %s: %w", filename, err)
 	}
 
-	if err := json.Unmarshal(fileData, target); err != nil {
+	if err = json.Unmarshal(fileData, target); err != nil {
 		return fmt.Errorf("failed to unmarshal JSON data from %s: %w", filename, err)
 	}
 

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestIsLinkAvailableTableDriven(t *testing.T) {
+func TestIsLinkAvailable(t *testing.T) {
 	type mockExpectation struct {
 		URL         string
 		ReturnAvail bool

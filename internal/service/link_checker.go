@@ -43,11 +43,14 @@ func (h *hTTPLinkChecker) IsLinkAvailable(ctx context.Context, link string) (boo
 		go func(url string) {
 			defer wg.Done()
 
-			var isAvailable bool
-			isAvailable, err = h.checker.IsLinkAvailable(ctx, url)
-			if err != nil {
+			var (
+				isAvailable bool
+				localErr    error
+			)
+			isAvailable, localErr = h.checker.IsLinkAvailable(ctx, url)
+			if localErr != nil {
 				select {
-				case errChan <- err:
+				case errChan <- localErr:
 				case <-ctx.Done():
 				}
 				return

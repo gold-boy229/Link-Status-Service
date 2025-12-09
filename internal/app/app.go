@@ -34,7 +34,7 @@ func (a *app) Run() {
 	linkRepo := repository.NewLinkRepository()
 	var dataManager dataManager = linkRepo
 	if err := dataManager.LoadDataFromJSON(); err != nil {
-		log.Fatalf("error during loading data from JSON file(s): %w\n", err)
+		log.Fatalf("error during loading data from JSON file(s): %v\n", err)
 	}
 
 	clientChecker := client.NewCustomHTTPClient()
@@ -44,7 +44,7 @@ func (a *app) Run() {
 	var linkHandler linkHandlerI = handlers.NewLinkHandler(linkService, pdfBuilder)
 
 	a.echo.POST("/links/get_status", linkHandler.GetStatus)
-	a.echo.GET("/links/pdf", linkHandler.BuildPDF)
+	a.echo.POST("/links/pdf", linkHandler.BuildPDF)
 
 	// graceful shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

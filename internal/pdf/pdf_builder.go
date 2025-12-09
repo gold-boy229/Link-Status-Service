@@ -26,16 +26,24 @@ type pdfCellParams struct {
 	linkStr   string
 }
 
-var basicColumnParams = pdfCellParams{
-	w:         0,
-	h:         LineHeight,
-	txtStr:    "",
-	borderStr: "1",
-	ln:        0,
-	alignStr:  "C",
-	fill:      false,
-	link:      0,
-	linkStr:   "",
+func newColumnParams(width float64) pdfCellParams {
+	cellParams := newBasicColumnParams()
+	cellParams.w = width
+	return cellParams
+}
+
+func newBasicColumnParams() pdfCellParams {
+	return pdfCellParams{
+		w:         0,
+		h:         LineHeight,
+		txtStr:    "",
+		borderStr: "1",
+		ln:        0,
+		alignStr:  "C",
+		fill:      false,
+		link:      0,
+		linkStr:   "",
+	}
 }
 
 func (builder *pdfBuilder) BuildPDF(linkStatuses []entity.LinkStatus) *fpdf.Fpdf {
@@ -47,10 +55,8 @@ func (builder *pdfBuilder) BuildPDF(linkStatuses []entity.LinkStatus) *fpdf.Fpdf
 	pdf.Cell(60, LineHeight, "Links availablity")
 	pdf.Ln(LineHeight)
 
-	linkColumnParams := basicColumnParams
-	linkColumnParams.w = 130
-	statusColumnParams := basicColumnParams
-	statusColumnParams.w = 60
+	linkColumnParams := newColumnParams(130)
+	statusColumnParams := newColumnParams(60)
 
 	// Set Head of Table
 	pdf.SetFont("Arial", "B", 12)

@@ -60,7 +60,6 @@ func TestIsLinkAvailable(t *testing.T) {
 						log.Printf("cannot close response body: %v", closeErr)
 					}
 				}()
-
 			},
 			wantAvailable: false,
 			wantErr:       true,

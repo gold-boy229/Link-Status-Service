@@ -12,7 +12,17 @@ func NewPDFBuilder() *pdfBuilder {
 	return &pdfBuilder{}
 }
 
-const LineHeight float64 = 10
+const (
+	lineHeight float64 = 10
+
+	headerWidth    float64 = 60
+	headerFontSize float64 = 16
+
+	linkColumnWidth   float64 = 130
+	statusColumnWidth float64 = 60
+
+	tableCellFontSize float64 = 12
+)
 
 type pdfCellParams struct {
 	w         float64
@@ -35,7 +45,7 @@ func newColumnParams(width float64) pdfCellParams {
 func newBasicColumnParams() pdfCellParams {
 	return pdfCellParams{
 		w:         0,
-		h:         LineHeight,
+		h:         lineHeight,
 		txtStr:    "",
 		borderStr: "1",
 		ln:        0,
@@ -51,25 +61,25 @@ func (builder *pdfBuilder) BuildPDF(linkStatuses []entity.LinkStatus) *fpdf.Fpdf
 	pdf.AddPage()
 
 	// Set Header
-	pdf.SetFont("Arial", "B", 16)
-	pdf.Cell(60, LineHeight, "Links availablity")
-	pdf.Ln(LineHeight)
+	pdf.SetFont("Arial", "B", headerFontSize)
+	pdf.Cell(headerWidth, lineHeight, "Links availablity")
+	pdf.Ln(lineHeight)
 
-	linkColumnParams := newColumnParams(130)
-	statusColumnParams := newColumnParams(60)
+	linkColumnParams := newColumnParams(linkColumnWidth)
+	statusColumnParams := newColumnParams(statusColumnWidth)
 
 	// Set Head of Table
-	pdf.SetFont("Arial", "B", 12)
+	pdf.SetFont("Arial", "B", tableCellFontSize)
 	pdfAddCell(pdf, "Link", linkColumnParams)
 	pdfAddCell(pdf, "Status", statusColumnParams)
-	pdf.Ln(LineHeight)
+	pdf.Ln(lineHeight)
 
 	// Build table
-	pdf.SetFont("Arial", "", 12)
+	pdf.SetFont("Arial", "", tableCellFontSize)
 	for _, linkStatus := range linkStatuses {
 		pdfAddCell(pdf, linkStatus.Address, linkColumnParams)
 		pdfAddCell(pdf, linkStatus.Status, statusColumnParams)
-		pdf.Ln(LineHeight)
+		pdf.Ln(lineHeight)
 	}
 	return pdf
 }

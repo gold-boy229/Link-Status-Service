@@ -22,6 +22,8 @@ import (
 	"github.com/labstack/echo"
 )
 
+const gracefulShutdownTimeout time.Duration = 10 * time.Second
+
 type app struct {
 	echo *echo.Echo
 }
@@ -67,7 +69,7 @@ func (a *app) Run() {
 	log.Println("Shutdown signal received. Starting graceful shutdown...")
 
 	// Shutdown the Echo server with a timeout (Allows existing requests to finish)
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), gracefulShutdownTimeout)
 	// It's vital to wait for this 'Shutdown' call to complete
 	err := a.echo.Shutdown(shutdownCtx)
 	cancel() // Release the shutdown context resources immediately after the call

@@ -8,6 +8,8 @@ import (
 )
 
 func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		inputJSON      string

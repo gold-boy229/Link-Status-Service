@@ -20,6 +20,8 @@ type testCheckerOut struct {
 }
 
 func TestGetLinkStates(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name             string
 		mockCheckerInput []string
@@ -271,6 +273,8 @@ func TestGetLinkStates(t *testing.T) {
 }
 
 func TestGetUniqueLinksFromLinkSets(t *testing.T) {
+	t.Parallel()
+
 	type mockOutput struct {
 		ReturnData []string
 		ReturnErr  error

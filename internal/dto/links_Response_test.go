@@ -11,6 +11,8 @@ import (
 )
 
 func TestLinksStatus_Response_MarshalJSON(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		inputData    LinksStatusResponse

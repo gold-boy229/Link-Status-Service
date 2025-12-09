@@ -83,7 +83,7 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 	}()
 
 	linkStates := make([]entity.LinkState, numLinks)
-	for i := 0; i < numLinks; i++ {
+	for range numLinks {
 		select {
 		case result := <-resultChan:
 			linkStates[result.Index] = result.LinkState

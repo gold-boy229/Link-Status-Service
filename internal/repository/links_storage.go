@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"hash/fnv"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -136,7 +137,7 @@ func saveMapToFile(filename string, data interface{}) error {
 		return fmt.Errorf("failed to write JSON data to file %s: %w", filename, err)
 	}
 
-	fmt.Printf("Info: Successfully saved data to %s.\n", filename)
+	log.Printf("Info: Successfully saved data to %s.\n", filename)
 	return nil
 }
 
@@ -178,7 +179,7 @@ func (repo *linkRepository) LoadDataFromJSON() error {
 
 func loadFileToMap(filename string, target interface{}) error {
 	if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
-		fmt.Printf("Info: Data file %s not found, skipping load.\n", filename)
+		log.Printf("Info: Data file %s not found, skipping load.\n", filename)
 		return nil
 	}
 
@@ -191,6 +192,6 @@ func loadFileToMap(filename string, target interface{}) error {
 		return fmt.Errorf("failed to unmarshal JSON data from %s: %w", filename, err)
 	}
 
-	fmt.Printf("Info: Successfully loaded data from %s.\n", filename)
+	log.Printf("Info: Successfully loaded data from %s.\n", filename)
 	return nil
 }

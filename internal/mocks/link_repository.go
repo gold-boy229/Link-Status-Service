@@ -21,7 +21,10 @@ func (m *mockLinkRepository) GetLinkNum(ctx context.Context, links []string) (li
 
 func (m *mockLinkRepository) GetLinksByLinkNum(ctx context.Context, linkNum int) (links []string, err error) {
 	args := m.Called(ctx, linkNum)
-	return args.Get(0).([]string), args.Error(1)
+
+	links, _ = args.Get(0).([]string)
+	err = args.Error(1)
+	return links, err
 }
 
 func (m *mockLinkRepository) StoreLinks(ctx context.Context, links []string, linkNum int) error {

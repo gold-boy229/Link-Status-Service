@@ -1,12 +1,13 @@
 package service
 
 import (
-	"Link-Status-Service/internal/entity"
-	"Link-Status-Service/internal/utils"
 	"context"
 	"fmt"
 	"sync"
 	"sync/atomic"
+
+	"Link-Status-Service/internal/entity"
+	"Link-Status-Service/internal/utils"
 )
 
 type linkService struct {
@@ -18,23 +19,26 @@ func NewLinkService(repo linkRepository, checker linkChecker) *linkService {
 	return &linkService{repo: repo, checker: checker}
 }
 
-func (s *linkService) GetStatus(ctx context.Context, params entity.LinkGetStatus_Params) (entity.LinkGetStatus_Result, error) {
+func (s *linkService) GetStatus(
+	ctx context.Context,
+	params entity.LinkGetStatusParams,
+) (entity.LinkGetStatusResult, error) {
 	linkNum, isLinkNumNew, err := s.repo.GetLinkNum(ctx, params.Links)
 	if err != nil {
-		return entity.LinkGetStatus_Result{}, fmt.Errorf("error during getting LinkNum: %w", err)
+		return entity.LinkGetStatusResult{}, fmt.Errorf("error during getting LinkNum: %w", err)
 	}
 	if isLinkNumNew {
-		if err := s.repo.StoreLinks(ctx, params.Links, linkNum); err != nil {
-			return entity.LinkGetStatus_Result{}, fmt.Errorf("error during storing set of links: %w", err)
+		if err = s.repo.StoreLinks(ctx, params.Links, linkNum); err != nil {
+			return entity.LinkGetStatusResult{}, fmt.Errorf("error during storing set of links: %w", err)
 		}
 	}
 
 	linkStates, err := s.getLinkStates(ctx, params.Links)
 	if err != nil {
-		return entity.LinkGetStatus_Result{}, fmt.Errorf("error during getting Link states: %w", err)
+		return entity.LinkGetStatusResult{}, fmt.Errorf("error during getting Link states: %w", err)
 	}
 
-	return entity.LinkGetStatus_Result{
+	return entity.LinkGetStatusResult{
 		LinkStates: linkStates,
 		LinkNum:    linkNum,
 	}, nil
@@ -42,6 +46,7 @@ func (s *linkService) GetStatus(ctx context.Context, params entity.LinkGetStatus
 
 type linkStateResult struct {
 	entity.LinkState
+
 	Index int
 }
 
@@ -78,7 +83,7 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 	}()
 
 	linkStates := make([]entity.LinkState, numLinks)
-	for i := 0; i < numLinks; i++ {
+	for range numLinks {
 		select {
 		case result := <-resultChan:
 			linkStates[result.Index] = result.LinkState
@@ -89,24 +94,27 @@ func (s *linkService) getLinkStates(ctx context.Context, links []string) ([]enti
 	return linkStates, nil
 }
 
-func (s *linkService) GetStatusesOfLinkSets(ctx context.Context, params entity.LinkBuildPDS_Params) (entity.LinkBuildPDS_Result, error) {
+func (s *linkService) GetStatusesOfLinkSets(
+	ctx context.Context,
+	params entity.LinkBuildPDSParams,
+) (entity.LinkBuildPDSResult, error) {
 	uniqueLinks, err := s.getUniqueLinksFromLinkSets(ctx, params.LinkNums)
 	if err != nil {
-		return entity.LinkBuildPDS_Result{}, fmt.Errorf("cannot get uniqueLinks: %w", err)
+		return entity.LinkBuildPDSResult{}, fmt.Errorf("cannot get uniqueLinks: %w", err)
 	}
 
 	sortedLinks := utils.SortStrings(uniqueLinks)
 	linkStates, err := s.getLinkStates(ctx, sortedLinks)
 	if err != nil {
-		return entity.LinkBuildPDS_Result{}, fmt.Errorf("cannot get linkStates: %w", err)
+		return entity.LinkBuildPDSResult{}, fmt.Errorf("cannot get linkStates: %w", err)
 	}
-	return entity.LinkBuildPDS_Result{LinkStates: linkStates}, nil
+	return entity.LinkBuildPDSResult{LinkStates: linkStates}, nil
 }
 
 func (s *linkService) getUniqueLinksFromLinkSets(ctx context.Context, linkNums []int) ([]string, error) {
 	var (
 		mp      = new(sync.Map)
-		mp_size = new(atomic.Int64)
+		mpSize  = new(atomic.Int64)
 		wg      = new(sync.WaitGroup)
 		errChan = make(chan error, 1)
 	)
@@ -128,7 +136,7 @@ func (s *linkService) getUniqueLinksFromLinkSets(ctx context.Context, linkNums [
 			for _, link := range links {
 				_, alreadyExisted := mp.LoadOrStore(link, struct{}{})
 				if !alreadyExisted {
-					mp_size.Add(1)
+					mpSize.Add(1)
 				}
 			}
 		}(linkNum)
@@ -141,7 +149,7 @@ func (s *linkService) getUniqueLinksFromLinkSets(ctx context.Context, linkNums [
 	default:
 	}
 
-	uniqueLinks := make([]string, 0, mp_size.Load())
+	uniqueLinks := make([]string, 0, mpSize.Load())
 	mp.Range(func(key, value any) bool {
 		link, _ := key.(string)
 		uniqueLinks = append(uniqueLinks, link)

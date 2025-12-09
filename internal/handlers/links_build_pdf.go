@@ -1,32 +1,33 @@
 package handlers
 
 import (
+	"fmt"
+	"net/http"
+
 	"Link-Status-Service/internal/consts"
 	"Link-Status-Service/internal/dto"
 	"Link-Status-Service/internal/entity"
-	"fmt"
-	"net/http"
 
 	"github.com/labstack/echo"
 )
 
 func (h linkHandler) BuildPDF(c echo.Context) error {
-	var reqDTO dto.LinkBuildPDF_Request
+	var reqDTO dto.LinkBuildPDFRequest
 	if err := c.Bind(&reqDTO); err != nil {
 		return c.JSON(http.StatusBadRequest,
-			dto.NewError(consts.ERROR_CODE_BAD_REQUEST, err.Error()))
+			dto.NewError(consts.ErrorCodeBadRequest, err.Error()))
 	}
 	if err := c.Validate(reqDTO); err != nil {
 		return c.JSON(http.StatusBadRequest,
-			dto.NewError(consts.ERROR_CODE_BAD_REQUEST, err.Error()))
+			dto.NewError(consts.ErrorCodeBadRequest, err.Error()))
 	}
 
-	params := convertDTOToEntity_LinkBuildPDF(reqDTO)
+	params := convertDTOToEntityLinkBuildPDF(reqDTO)
 	// call service to get link statuses of union of all linkSets
 	result, err := h.LinkService.GetStatusesOfLinkSets(c.Request().Context(), params)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError,
-			dto.NewError(consts.ERROR_CODE_INTERNAL_SERVER_ERROR, err.Error()))
+			dto.NewError(consts.ErrorCodeInternalServerError, err.Error()))
 	}
 
 	linkStatuses := convertLinkStatesToLinkStatuses(result.LinkStates)
@@ -42,13 +43,13 @@ func (h linkHandler) BuildPDF(c echo.Context) error {
 	if err != nil {
 		err = fmt.Errorf("cannot generate PDF: %w", err)
 		return c.JSON(http.StatusInternalServerError,
-			dto.NewError(consts.ERROR_CODE_INTERNAL_SERVER_ERROR, err.Error()))
+			dto.NewError(consts.ErrorCodeInternalServerError, err.Error()))
 	}
 	return nil
 }
 
-func convertDTOToEntity_LinkBuildPDF(reqDTO dto.LinkBuildPDF_Request) entity.LinkBuildPDS_Params {
-	return entity.LinkBuildPDS_Params{
+func convertDTOToEntityLinkBuildPDF(reqDTO dto.LinkBuildPDFRequest) entity.LinkBuildPDSParams {
+	return entity.LinkBuildPDSParams{
 		LinkNums: reqDTO.LinkNums,
 	}
 }

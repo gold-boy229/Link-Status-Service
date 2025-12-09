@@ -1,12 +1,6 @@
 package app
 
 import (
-	"Link-Status-Service/internal/client"
-	"Link-Status-Service/internal/handlers"
-	"Link-Status-Service/internal/pdf"
-	"Link-Status-Service/internal/repository"
-	"Link-Status-Service/internal/service"
-	"Link-Status-Service/internal/utils"
 	"context"
 	"errors"
 	"fmt"
@@ -18,8 +12,17 @@ import (
 	"syscall"
 	"time"
 
+	"Link-Status-Service/internal/client"
+	"Link-Status-Service/internal/handlers"
+	"Link-Status-Service/internal/pdf"
+	"Link-Status-Service/internal/repository"
+	"Link-Status-Service/internal/service"
+	"Link-Status-Service/internal/utils"
+
 	"github.com/labstack/echo"
 )
+
+const gracefulShutdownTimeout time.Duration = 10 * time.Second
 
 type app struct {
 	echo *echo.Echo
@@ -54,9 +57,9 @@ func (a *app) Run() {
 	defer stop()
 
 	// start server in a separate goroutine
-	app_port := getAppPort()
+	appPort := getAppPort()
 	go func() {
-		if err := a.echo.Start(fmt.Sprintf(":%d", app_port)); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := a.echo.Start(fmt.Sprintf(":%d", appPort)); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			a.echo.Logger.Fatal("shutting down the server unexpectedly:", err)
 		}
 	}()
@@ -66,7 +69,7 @@ func (a *app) Run() {
 	log.Println("Shutdown signal received. Starting graceful shutdown...")
 
 	// Shutdown the Echo server with a timeout (Allows existing requests to finish)
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), gracefulShutdownTimeout)
 	// It's vital to wait for this 'Shutdown' call to complete
 	err := a.echo.Shutdown(shutdownCtx)
 	cancel() // Release the shutdown context resources immediately after the call
@@ -78,7 +81,7 @@ func (a *app) Run() {
 
 	// Call the repository method to persist data (Task 2)
 	log.Println("Persisting data to JSON files...")
-	if err := dataManager.StoreDataToJSON(); err != nil {
+	if err = dataManager.StoreDataToJSON(); err != nil {
 		log.Printf("Error storing data to JSON: %v\n", err)
 	} else {
 		log.Println("Data persistence complete.")

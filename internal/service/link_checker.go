@@ -26,7 +26,8 @@ func (h *hTTPLinkChecker) IsLinkAvailable(ctx context.Context, link string) (boo
 	}
 
 	schemes := []string{"http", "https"}
-	urls := make([]string, 2)
+	callsNumber := len(schemes)
+	urls := make([]string, callsNumber)
 	for idx := range schemes {
 		u := *parsedURL
 		u.Scheme = schemes[idx]
@@ -34,18 +35,22 @@ func (h *hTTPLinkChecker) IsLinkAvailable(ctx context.Context, link string) (boo
 	}
 
 	wg := &sync.WaitGroup{}
-	goodChan := make(chan bool, 2)
-	errChan := make(chan error, 2)
+	goodChan := make(chan bool, callsNumber)
+	errChan := make(chan error, callsNumber)
 
 	for _, url := range urls {
 		wg.Add(1)
 		go func(url string) {
 			defer wg.Done()
 
-			isAvailable, err := h.checker.IsLinkAvailable(ctx, url)
-			if err != nil {
+			var (
+				isAvailable bool
+				localErr    error
+			)
+			isAvailable, localErr = h.checker.IsLinkAvailable(ctx, url)
+			if localErr != nil {
 				select {
-				case errChan <- err:
+				case errChan <- localErr:
 				case <-ctx.Done():
 				}
 				return
@@ -64,8 +69,7 @@ func (h *hTTPLinkChecker) IsLinkAvailable(ctx context.Context, link string) (boo
 	}()
 
 	goodResultCnt := 0
-	errs := make([]error, 0, 2)
-	totalNumberOfCalls := len(urls)
+	errs := make([]error, 0, callsNumber)
 	for {
 		select {
 		case isAvailable := <-goodChan:
@@ -73,13 +77,13 @@ func (h *hTTPLinkChecker) IsLinkAvailable(ctx context.Context, link string) (boo
 			if isAvailable {
 				return true, nil
 			}
-			if goodResultCnt+len(errs) == totalNumberOfCalls {
+			if goodResultCnt+len(errs) == callsNumber {
 				return false, nil
 			}
 
-		case err := <-errChan:
+		case err = <-errChan:
 			errs = append(errs, err)
-			if len(errs) == totalNumberOfCalls {
+			if len(errs) == callsNumber {
 				return false, fmt.Errorf("got two errors for http and https calls: \n1)%w \n2)%w", errs[0], errs[1])
 			}
 			if goodResultCnt > 0 {

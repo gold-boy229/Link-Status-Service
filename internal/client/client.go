@@ -8,12 +8,14 @@ import (
 	"time"
 )
 
+const requestTimeout time.Duration = 2 * time.Second
+
 type customHTTPClient struct {
 	http.Client
 }
 
 func NewCustomHTTPClient() *customHTTPClient {
-	return &customHTTPClient{Client: http.Client{Timeout: 2 * time.Second}}
+	return &customHTTPClient{Client: http.Client{Timeout: requestTimeout}}
 }
 
 func (client *customHTTPClient) IsLinkAvailable(ctx context.Context, link string) (bool, error) {

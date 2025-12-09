@@ -8,6 +8,8 @@ import (
 )
 
 func TestStoreLinks(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		inputLinks   []string

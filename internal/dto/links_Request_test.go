@@ -8,16 +8,18 @@ import (
 )
 
 func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		inputJSON      string
-		expectedResult LinksGetStatus_Request
+		expectedResult LinksGetStatusRequest
 		expectErr      bool
 	}{
 		{
 			name:      "Success case: unmarshal empty string",
 			inputJSON: `{"links":""}`,
-			expectedResult: LinksGetStatus_Request{
+			expectedResult: LinksGetStatusRequest{
 				Links: []string{},
 			},
 			expectErr: false,
@@ -25,7 +27,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		{
 			name:      "Success case: unmarshal not empty string",
 			inputJSON: `{"links":"aaa.com"}`,
-			expectedResult: LinksGetStatus_Request{
+			expectedResult: LinksGetStatusRequest{
 				Links: []string{"aaa.com"},
 			},
 			expectErr: false,
@@ -33,7 +35,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		{
 			name:      "Success case: unmarshal empty list of strings",
 			inputJSON: `{"links":[]}`,
-			expectedResult: LinksGetStatus_Request{
+			expectedResult: LinksGetStatusRequest{
 				Links: []string{},
 			},
 			expectErr: false,
@@ -41,7 +43,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		{
 			name:      "Success case: unmarshal list of one string",
 			inputJSON: `{"links":["aaa.com"]}`,
-			expectedResult: LinksGetStatus_Request{
+			expectedResult: LinksGetStatusRequest{
 				Links: []string{"aaa.com"},
 			},
 			expectErr: false,
@@ -49,7 +51,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		{
 			name:      "Success case: unmarshal list of two strings",
 			inputJSON: `{"links":["aaa.com", "bbb.com"]}`,
-			expectedResult: LinksGetStatus_Request{
+			expectedResult: LinksGetStatusRequest{
 				Links: []string{"aaa.com", "bbb.com"},
 			},
 			expectErr: false,
@@ -57,7 +59,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		{
 			name:      "Fail case: unmarshal wrong type (integer)",
 			inputJSON: `{"links":123}`,
-			expectedResult: LinksGetStatus_Request{
+			expectedResult: LinksGetStatusRequest{
 				Links: []string{},
 			},
 			expectErr: true,
@@ -65,7 +67,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		{
 			name:      "Fail case: unmarshal wrong type (bool)",
 			inputJSON: `{"links":true}`,
-			expectedResult: LinksGetStatus_Request{
+			expectedResult: LinksGetStatusRequest{
 				Links: []string{},
 			},
 			expectErr: true,
@@ -76,7 +78,7 @@ func TestLinksGetStatus_Request_UnmarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			var reqData LinksGetStatus_Request
+			var reqData LinksGetStatusRequest
 			err := json.Unmarshal([]byte(tt.inputJSON), &reqData)
 
 			if tt.expectErr {

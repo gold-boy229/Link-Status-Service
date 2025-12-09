@@ -1,10 +1,10 @@
 package entity
 
-type LinkGetStatus_Params struct {
+type LinkGetStatusParams struct {
 	Links []string
 }
 
-type LinkGetStatus_Result struct {
+type LinkGetStatusResult struct {
 	LinkStates []LinkState
 	LinkNum    int
 }
@@ -14,16 +14,16 @@ type LinkState struct {
 	IsAvailable bool
 }
 
-type LinksState_Result struct {
+type LinksStateResult struct {
 	LinkStates []LinkState
 	Error      error
 }
 
-type LinkBuildPDS_Params struct {
+type LinkBuildPDSParams struct {
 	LinkNums []int
 }
 
-type LinkBuildPDS_Result struct {
+type LinkBuildPDSResult struct {
 	LinkStates []LinkState
 }
 

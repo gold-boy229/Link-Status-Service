@@ -54,9 +54,9 @@ func (a *app) Run() {
 	defer stop()
 
 	// start server in a separate goroutine
-	app_port := getAppPort()
+	appPort := getAppPort()
 	go func() {
-		if err := a.echo.Start(fmt.Sprintf(":%d", app_port)); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := a.echo.Start(fmt.Sprintf(":%d", appPort)); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			a.echo.Logger.Fatal("shutting down the server unexpectedly:", err)
 		}
 	}()

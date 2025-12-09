@@ -33,8 +33,8 @@ func TestGetStatus(t *testing.T) {
 		expectedStatus    int
 		expectedErrorCode string
 
-		mockInputData  entity.LinkGetStatus_Params
-		mockReturnData entity.LinkGetStatus_Result
+		mockInputData  entity.LinkGetStatusParams
+		mockReturnData entity.LinkGetStatusResult
 		mockReturnErr  error
 	}{
 		{
@@ -43,8 +43,8 @@ func TestGetStatus(t *testing.T) {
 			responseBody:   `{"links":{"aaa.com":"available","bbb.com":"not available"},"links_num":1}`,
 			expectedStatus: http.StatusOK,
 
-			mockInputData: entity.LinkGetStatus_Params{Links: []string{"aaa.com", "bbb.com"}},
-			mockReturnData: entity.LinkGetStatus_Result{
+			mockInputData: entity.LinkGetStatusParams{Links: []string{"aaa.com", "bbb.com"}},
+			mockReturnData: entity.LinkGetStatusResult{
 				LinkStates: []entity.LinkState{
 					{
 						Link:        "aaa.com",
@@ -65,8 +65,8 @@ func TestGetStatus(t *testing.T) {
 			responseBody:   `{"links":{"aaa.com":"available"},"links_num":1}`,
 			expectedStatus: http.StatusOK,
 
-			mockInputData: entity.LinkGetStatus_Params{Links: []string{"aaa.com"}},
-			mockReturnData: entity.LinkGetStatus_Result{
+			mockInputData: entity.LinkGetStatusParams{Links: []string{"aaa.com"}},
+			mockReturnData: entity.LinkGetStatusResult{
 				LinkStates: []entity.LinkState{
 					{
 						Link:        "aaa.com",
@@ -82,10 +82,10 @@ func TestGetStatus(t *testing.T) {
 			requestBody:       `{"links":[]}`,
 			responseBody:      ``,
 			expectedStatus:    http.StatusBadRequest,
-			expectedErrorCode: consts.ERROR_CODE_BAD_REQUEST,
+			expectedErrorCode: consts.ErrorCodeBadRequest,
 
-			mockInputData:  entity.LinkGetStatus_Params{Links: []string{}},
-			mockReturnData: entity.LinkGetStatus_Result{},
+			mockInputData:  entity.LinkGetStatusParams{Links: []string{}},
+			mockReturnData: entity.LinkGetStatusResult{},
 			mockReturnErr:  nil,
 		},
 		{
@@ -93,10 +93,10 @@ func TestGetStatus(t *testing.T) {
 			requestBody:       `{"links":""}`,
 			responseBody:      ``,
 			expectedStatus:    http.StatusBadRequest,
-			expectedErrorCode: consts.ERROR_CODE_BAD_REQUEST,
+			expectedErrorCode: consts.ErrorCodeBadRequest,
 
-			mockInputData:  entity.LinkGetStatus_Params{Links: []string{}},
-			mockReturnData: entity.LinkGetStatus_Result{},
+			mockInputData:  entity.LinkGetStatusParams{Links: []string{}},
+			mockReturnData: entity.LinkGetStatusResult{},
 			mockReturnErr:  nil,
 		},
 		{
@@ -104,10 +104,10 @@ func TestGetStatus(t *testing.T) {
 			requestBody:       `{"links":["aaa.com"]}`,
 			responseBody:      ``,
 			expectedStatus:    http.StatusInternalServerError,
-			expectedErrorCode: consts.ERROR_CODE_INTERNAL_SERVER_ERROR,
+			expectedErrorCode: consts.ErrorCodeInternalServerError,
 
-			mockInputData: entity.LinkGetStatus_Params{Links: []string{"aaa.com"}},
-			mockReturnData: entity.LinkGetStatus_Result{
+			mockInputData: entity.LinkGetStatusParams{Links: []string{"aaa.com"}},
+			mockReturnData: entity.LinkGetStatusResult{
 				LinkStates: []entity.LinkState{
 					{
 						Link:        "aaa.com",
@@ -129,9 +129,9 @@ func TestGetStatus(t *testing.T) {
 			rr := httptest.NewRecorder()
 
 			// Setup echo context
-			echo_inst := echo.New()
-			echo_inst.Validator = validator
-			echo_context := echo_inst.NewContext(req, rr)
+			echoInst := echo.New()
+			echoInst.Validator = validator
+			echoCtx := echoInst.NewContext(req, rr)
 
 			// If we expect DB call
 			if tt.expectedStatus != http.StatusBadRequest {
@@ -139,7 +139,7 @@ func TestGetStatus(t *testing.T) {
 					Return(tt.mockReturnData, tt.mockReturnErr).Once()
 			}
 
-			err := handler.GetStatus(echo_context)
+			err := handler.GetStatus(echoCtx)
 			assert.Nil(t, err)
 
 			assert.Equal(t, tt.expectedStatus, rr.Code, "Handler returned wrong status code")

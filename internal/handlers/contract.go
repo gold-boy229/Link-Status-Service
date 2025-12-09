@@ -8,8 +8,8 @@ import (
 )
 
 type linkService interface {
-	GetStatus(context.Context, entity.LinkGetStatus_Params) (entity.LinkGetStatus_Result, error)
-	GetStatusesOfLinkSets(context.Context, entity.LinkBuildPDS_Params) (entity.LinkBuildPDS_Result, error)
+	GetStatus(context.Context, entity.LinkGetStatusParams) (entity.LinkGetStatusResult, error)
+	GetStatusesOfLinkSets(context.Context, entity.LinkBuildPDSParams) (entity.LinkBuildPDSResult, error)
 }
 
 type pdfBuilder interface {

@@ -275,18 +275,18 @@ func TestGetUniqueLinksFromLinkSets(t *testing.T) {
 	}
 
 	tests := []struct {
-		name                  string
-		inputLinkNums         []int
-		mockOutputs           []mockOutput
-		expectedResult_sorted []string
-		expectErr             bool
+		name                 string
+		inputLinkNums        []int
+		mockOutputs          []mockOutput
+		expectedResultSorted []string
+		expectErr            bool
 	}{
 		{
-			name:                  "Success case: no linkNums",
-			inputLinkNums:         []int{},
-			mockOutputs:           []mockOutput{},
-			expectedResult_sorted: []string{},
-			expectErr:             false,
+			name:                 "Success case: no linkNums",
+			inputLinkNums:        []int{},
+			mockOutputs:          []mockOutput{},
+			expectedResultSorted: []string{},
+			expectErr:            false,
 		},
 		{
 			name:          "Success case: one linkNum",
@@ -300,7 +300,7 @@ func TestGetUniqueLinksFromLinkSets(t *testing.T) {
 					ReturnErr: nil,
 				},
 			},
-			expectedResult_sorted: []string{
+			expectedResultSorted: []string{
 				"aaa.com",
 				"bbb.ru",
 			},
@@ -325,7 +325,7 @@ func TestGetUniqueLinksFromLinkSets(t *testing.T) {
 					ReturnErr: nil,
 				},
 			},
-			expectedResult_sorted: []string{
+			expectedResultSorted: []string{
 				"a_first.com",
 				"b_second.com",
 				"c_third.com",
@@ -352,7 +352,7 @@ func TestGetUniqueLinksFromLinkSets(t *testing.T) {
 					ReturnErr: nil,
 				},
 			},
-			expectedResult_sorted: []string{
+			expectedResultSorted: []string{
 				"a_first.com",
 				"b_second.com",
 				"c_third.com",
@@ -382,7 +382,7 @@ func TestGetUniqueLinksFromLinkSets(t *testing.T) {
 			assert.Nil(t, err)
 
 			sortedLinks := utils.SortStrings(uniqueLinks)
-			assert.EqualValues(t, tt.expectedResult_sorted, sortedLinks)
+			assert.EqualValues(t, tt.expectedResultSorted, sortedLinks)
 
 			mockRepo.AssertExpectations(t)
 		})

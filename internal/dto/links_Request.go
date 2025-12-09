@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-type LinksGetStatus_Request struct {
+type LinksGetStatusRequest struct {
 	Links LinkList `json:"links" validate:"required,min=1"`
 }
 
@@ -32,6 +32,6 @@ func (linkList *LinkList) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type LinkBuildPDF_Request struct {
+type LinkBuildPDFRequest struct {
 	LinkNums []int `json:"links_list" validate:"required,min=1"`
 }

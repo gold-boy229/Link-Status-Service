@@ -5,19 +5,19 @@ import (
 	"fmt"
 )
 
-type LinksGetStatus_Response struct {
-	Links    LinksStatus_Response `json:"links"`
-	LinksNum int                  `json:"links_num"`
+type LinksGetStatusResponse struct {
+	Links    LinksStatusResponse `json:"links"`
+	LinksNum int                 `json:"links_num"`
 }
 
-type LinksStatus_Response []LinkStatus_Response
+type LinksStatusResponse []LinkStatusResponse
 
-type LinkStatus_Response struct {
+type LinkStatusResponse struct {
 	Address string
 	Status  string
 }
 
-func (links LinksStatus_Response) MarshalJSON() ([]byte, error) {
+func (links LinksStatusResponse) MarshalJSON() ([]byte, error) {
 	buff := bytes.NewBufferString(`{`)
 	for i, link := range links {
 		if i > 0 {

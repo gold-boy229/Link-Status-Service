@@ -17,5 +17,6 @@ func NewMockPDFBuilder() *mockPDFBuilder {
 
 func (m *mockPDFBuilder) BuildPDF(linkStatuses []entity.LinkStatus) *fpdf.Fpdf {
 	args := m.Called(linkStatuses)
-	return args.Get(0).(*fpdf.Fpdf)
+	pdfPointer, _ := args.Get(0).(*fpdf.Fpdf)
+	return pdfPointer
 }

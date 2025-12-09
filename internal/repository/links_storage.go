@@ -52,7 +52,9 @@ func (repo *linkRepository) hashToLinkNum_GetOrCreate(hash uint64) (linkNum int,
 	if isNew {
 		repo.counter.Add(1)
 	}
-	return actualLinkNum.(int), isNew
+
+	linkNum, _ = actualLinkNum.(int)
+	return linkNum, isNew
 }
 
 func (repo *linkRepository) StoreLinks(ctx context.Context, links []string, linkNum int) error {
@@ -63,16 +65,17 @@ func (repo *linkRepository) StoreLinks(ctx context.Context, links []string, link
 }
 
 func (repo *linkRepository) GetLinksByLinkNum(ctx context.Context, linkNum int) ([]string, error) {
-	links, exists := repo.map_LinkNum_to_links.Load(linkNum)
+	linksAny, exists := repo.map_LinkNum_to_links.Load(linkNum)
 	if !exists {
 		return []string{}, nil
 	}
 
-	_, ok := links.([]string)
+	links, ok := linksAny.([]string)
 	if !ok {
 		return []string{}, errors.New("cannot convert links to []string")
 	}
-	return links.([]string), nil
+
+	return links, nil
 }
 
 func (repo *linkRepository) StoreDataToJSON() error {
